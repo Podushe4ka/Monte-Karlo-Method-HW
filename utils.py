@@ -1,6 +1,10 @@
 import networkx as nx
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
+import matplotlib.pyplot as plt
+import seaborn as sns
+from tqdm import tqdm
+
 
 def build_knn_nx(data, k):
     G = nx.Graph()
@@ -34,3 +38,40 @@ def calculate_connected_components(G):
 def calculate_chromatic_number(G):
     coloring = nx.greedy_color(G, strategy='largest_first')
     return max(coloring.values()) + 1
+
+
+class DataGenerator:
+    def __init__(self, lambda0_exp=1.0, lambda0_weibull=1/np.sqrt(10), shape_weibull=0.5):
+        self.lambda0_exp = lambda0_exp
+        self.lambda0_weibull = lambda0_weibull
+        self.shape_weibull = shape_weibull
+        
+    def generate_h0(self, n, lambda_param):
+        return np.random.exponential(scale=1/lambda_param, size=n)
+    
+    def generate_h1(self, n, lambda_param):
+        return np.random.weibull(a=self.shape_weibull, size=n) * lambda_param
+    
+    def generate_h0_lambda0(self, n):
+        return np.random.exponential(scale=1/self.lambda0_exp, size=n)
+    
+    def generate_h1_lambda0(self, n):
+        return np.random.weibull(a=self.shape_weibull, size=n) * self.lambda0_weibull
+
+
+def monte_carlo_experiment(params, n_samples=1000):
+    gen = DataGenerator()
+    metrics = []
+    for _ in tqdm(range(n_samples)):
+        if params['graph_type'] == 'knn':
+            data = gen.generate_h0(params['n'], params['lambda'])
+            G = build_knn_nx(data, params['x'])
+            mertic = calculate_connected_components(G)
+            metrics.append(mertic)
+        else:
+            data = gen.generate_h1(params['n'], params['lambda'])
+            G = build_dist_nx(data, params['x'])
+            mertic = calculate_chromatic_number(G)
+            metrics.append(mertic)
+
+    return np.array(metrics).mean()
