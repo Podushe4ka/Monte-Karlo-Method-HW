@@ -63,13 +63,18 @@ def monte_carlo_experiment(params, n_samples=1000):
     gen = DataGenerator()
     metrics = []
     for _ in range(n_samples):
-        if params['graph_type'] == 'knn':
+        data = []
+
+        if params['distribution'] == 'h0':
             data = gen.generate_h0(params['n'], params['lambda'])
+        else:
+            data = gen.generate_h1(params['n'], params['lambda'])
+
+        if params['graph_type'] == 'knn':
             G = build_knn_nx(data, params['x'])
             mertic = calculate_connected_components(G)
             metrics.append(mertic)
         else:
-            data = gen.generate_h1(params['n'], params['lambda'])
             G = build_dist_nx(data, params['x'])
             mertic = calculate_chromatic_number(G)
             metrics.append(mertic)
