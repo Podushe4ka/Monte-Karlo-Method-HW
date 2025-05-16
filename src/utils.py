@@ -62,7 +62,7 @@ class DataGenerator:
 def monte_carlo_experiment(params, n_samples=1000):
     gen = DataGenerator()
     metrics = []
-    for _ in tqdm(range(n_samples)):
+    for _ in range(n_samples):
         if params['graph_type'] == 'knn':
             data = gen.generate_h0(params['n'], params['lambda'])
             G = build_knn_nx(data, params['x'])
@@ -75,3 +75,4 @@ def monte_carlo_experiment(params, n_samples=1000):
             metrics.append(mertic)
 
     return np.array(metrics).mean()
+
