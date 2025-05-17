@@ -59,7 +59,7 @@ class DataGenerator:
         return np.random.weibull(a=self.shape_weibull, size=n) * self.lambda0_weibull
 
 
-def monte_carlo_experiment(params, n_samples=1000):
+def monte_carlo_experiment(params, n_samples=1000, return_average=True):
     gen = DataGenerator()
     metrics = []
     for _ in range(n_samples):
@@ -78,6 +78,7 @@ def monte_carlo_experiment(params, n_samples=1000):
             G = build_dist_nx(data, params['x'])
             mertic = calculate_chromatic_number(G)
             metrics.append(mertic)
-
-    return np.array(metrics).mean()
+    if return_average:
+        return np.array(metrics).mean()
+    return metrics
 
