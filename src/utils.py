@@ -40,6 +40,19 @@ def calculate_chromatic_number(G):
     return max(coloring.values()) + 1
 
 
+def calculate_clique_number(G):
+    return max(len(c) for c in nx.find_cliques(G))
+
+
+def calculate_size_maximal_independent_set(G):
+    return len(nx.maximal_independent_set(G))
+
+def calculate_size_dom_set(G):
+    return len(nx.dominating_set(G))
+
+
+
+
 class DataGenerator:
     def __init__(self, lambda0_exp=1.0, lambda0_weibull=1/np.sqrt(10), shape_weibull=0.5):
         self.lambda0_exp = lambda0_exp
