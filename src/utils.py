@@ -29,6 +29,16 @@ def build_dist_nx(data, d):
                 
     return G
 
+
+def calculate_connected_components(G):
+    return nx.number_connected_components(G)
+
+
+def calculate_chromatic_number(G):
+    coloring = nx.greedy_color(G, strategy='largest_first')
+    return max(coloring.values()) + 1
+  
+  
 def calculate_max_degree(G):
     degree_dict = dict(G.degree())
     max_deg = max(degree_dict.values())
@@ -37,6 +47,48 @@ def calculate_max_degree(G):
 def calculate_independent_set(G):
     mis = nx.maximal_independent_set(G)
     return len(mis)
+
+class DataGenerator:
+    def __init__(self, lambda0_exp=1.0, lambda0_weibull=1/np.sqrt(10), shape_weibull=0.5):
+        self.lambda0_exp = lambda0_exp
+        self.lambda0_weibull = lambda0_weibull
+        self.shape_weibull = shape_weibull
+        
+    def generate_h0(self, n, lambda_param):
+        return np.random.exponential(scale=1/lambda_param, size=n)
+    
+    def generate_h1(self, n, lambda_param):
+        return np.random.weibull(a=self.shape_weibull, size=n) * lambda_param
+    
+    def generate_h0_lambda0(self, n):
+        return np.random.exponential(scale=1/self.lambda0_exp, size=n)
+    
+    def generate_h1_lambda0(self, n):
+        return np.random.weibull(a=self.shape_weibull, size=n) * self.lambda0_weibull
+
+
+def monte_carlo_experiment(params, n_samples=1000, return_average=True):
+    gen = DataGenerator()
+    metrics = []
+    for _ in range(n_samples):
+        data = []
+
+        if params['distribution'] == 'h0':
+            data = gen.generate_h0(params['n'], params['lambda'])
+        else:
+            data = gen.generate_h1(params['n'], params['lambda'])
+
+        if params['graph_type'] == 'knn':
+            G = build_knn_nx(data, params['x'])
+            mertic = calculate_connected_components(G)
+            metrics.append(mertic)
+        else:
+            G = build_dist_nx(data, params['x'])
+            mertic = calculate_chromatic_number(G)
+            metrics.append(mertic)
+    if return_average:
+        return np.array(metrics).mean()
+    return metrics
 
 class DataGenerator_other:
     def __init__(self, shape_Laplace = 0, beta0_Laplace = np.sqrt(1/2), v0_Student = 3 ):
