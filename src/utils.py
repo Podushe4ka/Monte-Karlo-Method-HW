@@ -38,7 +38,7 @@ def calculate_independent_set(G):
     mis = nx.maximal_independent_set(G)
     return len(mis)
 
-class DataGenerator:
+class DataGenerator_other:
     def __init__(self, shape_Laplace = 0, beta0_Laplace = np.sqrt(1/2), v0_Student = 3 ):
         self.v0_Student = v0_Student
         self.beta0_Laplace = beta0_Laplace
@@ -59,7 +59,7 @@ class DataGenerator:
         return np.random.standard_t(df=self.v0_Student,
                                     size=n)
 
-def monte_carlo_experiment(params, n_samples=1000):
+def monte_carlo_experiment_other(params, n_samples=1000):
     gen = DataGenerator()
     metrics = []
     for _ in range(n_samples):
