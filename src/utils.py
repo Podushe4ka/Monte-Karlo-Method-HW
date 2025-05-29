@@ -112,7 +112,7 @@ class DataGenerator_other:
                                     size=n)
 
 def monte_carlo_experiment_other(params, n_samples=1000):
-    gen = DataGenerator()
+    gen = DataGenerator_other()
     metrics = []
     for _ in range(n_samples):
         data = []
